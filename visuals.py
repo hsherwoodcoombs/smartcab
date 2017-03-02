@@ -67,7 +67,6 @@ def plot_trials(csv):
 
 	if len(data) < 10:
 		print "Not enough data collected to create a visualization."
-		print "Currently at: " + 10 - len(data)
 		print "At least 20 trials are required."
 		return
 
