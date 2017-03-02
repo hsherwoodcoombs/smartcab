@@ -81,8 +81,8 @@ class LearningAgent(Agent):
         ###########
         # Calculate the maximum Q-value of all actions for a given state
         maxQ = None
-        for thisAction in self.valid_actions:
-            thisQ = self.Q[(state, thisAction)]
+        for action in self.valid_actions:
+            thisQ = self.Q[(state, action)]
             if thisQ > maxQ or maxQ is None:
                 maxQ = thisQ
         return maxQ
@@ -98,7 +98,9 @@ class LearningAgent(Agent):
         # If it is not, create a new dictionary for that state
         #   Then, for each action available, set the initial Q-value to 0.0
         #
-
+        if self.learning and self.state not in self.Q:
+            for action in self.valid_actions:
+                self.Q[self.state, action] = 0.0
         return
 
 
@@ -109,7 +111,6 @@ class LearningAgent(Agent):
         # Set the agent state and default action
         self.state = state
         self.next_waypoint = self.planner.next_waypoint()
-        self.action=random.choice(self.env.valid_actions)
 
         ###########
         ## TO DO ##
@@ -118,8 +119,15 @@ class LearningAgent(Agent):
         # When learning, choose a random action with 'epsilon' probability
         #   Otherwise, choose an action with the highest Q-value for the current state
 
+        if self.learning:
+            if random.random() < self.epsilon:
+                action = random.choice(self.valid_actions)
+            else:
+                action = random.choice([i for i in self.Q[self.state].keys() if self.Q[self.state][i] == self.get_maxQ(self.state)])
+        else:
+            action = random.choice(self.valid_actions)
 
-        return self.action
+        return action
 
 
     def learn(self, state, action, reward):
@@ -133,6 +141,8 @@ class LearningAgent(Agent):
         # When learning, implement the value iteration update rule
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
 
+        if self.learning:
+            self.Q[state][action] += (self.alpha * reward)
         return
 
 
@@ -168,7 +178,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent)
+    agent = env.create_agent(LearningAgent, learning=True)
 
     ##############
     # Follow the driving agent
