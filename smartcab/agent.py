@@ -16,13 +16,16 @@ class LearningAgent(Agent):
         # Set parameters of the learning agent
         self.learning = learning # Whether the agent is expected to learn
         self.Q = dict()          # Create a Q-table which will be a dictionary of tuples
-        self.epsilon = epsilon   # Random exploration factor
-        self.alpha = alpha       # Learning factor
+        self.epsilon = epsilon   # Exploration rate
+        self.alpha = alpha       # Learning rate
+        self.gamma = 1.0       # Discount rate
 
         ###########
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
+        self.state = None
+        self.action = None
 
 
     def reset(self, destination=None, testing=False):
@@ -39,6 +42,14 @@ class LearningAgent(Agent):
         # Update epsilon using a decay function of your choice
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
+
+        self.state = None
+        self.action = None
+
+        self.epsilon -= 0.05
+        if testing:
+            self.epsilon = 0.0
+            self.alpha = 0.0
 
         return None
 
@@ -70,7 +81,10 @@ class LearningAgent(Agent):
         ###########
         # Calculate the maximum Q-value of all actions for a given state
         maxQ = None
-
+        for thisAction in self.valid_actions:
+            thisQ = self.Q[(state, thisAction)]
+            if thisQ > maxQ or maxQ is None:
+                maxQ = thisQ
         return maxQ
 
 
