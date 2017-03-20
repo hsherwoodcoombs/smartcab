@@ -136,19 +136,10 @@ class LearningAgent(Agent):
                         bestAction = action
                 action = bestAction
 
-        elif not self.learning:
+        else:
             # choose random action
             action = random.choice(self.valid_actions)
 
-        else:
-            bestQ = None
-            bestAction = None
-            for action in self.valid_actions:
-                thisQ = self.Q[state][action]
-                if thisQ > bestQ:
-                    bestQ = thisQ
-                    bestAction = action
-            action = bestAction
         return action
 
         # if self.learning:
