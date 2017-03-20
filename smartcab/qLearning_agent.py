@@ -124,16 +124,18 @@ class LearningAgent(Agent):
 
         action = None
 
-        if not self.learning:
-            # choose random action
-            action = random.choice(self.valid_actions)
-
         if self.learning:
             if random.random < self.epsilon:
                 action = random.choice(self.valid_actions)
                 # choose action with 'epsilon probability'
             else:
                 action = random.choice([i for i in self.Q[self.state].keys() if self.Q[self.state][i] == self.get_maxQ(self.state)])
+
+        else:
+            # choose random action
+            action = random.choice(self.valid_actions)
+
+
         # else:
         #     # choose action with hist Q-value for current state
         #     bestQ = -100
