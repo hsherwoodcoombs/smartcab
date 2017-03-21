@@ -11,6 +11,7 @@ import random
 import importlib
 import csv
 
+
 class Simulator(object):
     """Simulates agents in a dynamic smartcab environment.
 
@@ -94,19 +95,42 @@ class Simulator(object):
             if a.learning:
                 if self.optimized: # Whether the user is optimizing the parameters and decay functions
                     self.log_filename = os.path.join("logs", "sim_improved-learning.csv")
+                    self.log_filename_expanded = os.path.join("logs", "sim_improved-learning-full.csv")
+                    self.log_metrics = os.path.join("logs", "sim_improved-learning-metrics.csv")
                     self.table_filename = os.path.join("logs","sim_improved-learning.txt")
                 else:
                     self.log_filename = os.path.join("logs", "sim_default-learning.csv")
+                    self.log_filename_expanded = os.path.join("logs", "sim_default-learning-full.csv")
                     self.table_filename = os.path.join("logs","sim_default-learning.txt")
 
                 self.table_file = open(self.table_filename, 'wb')
             else:
                 self.log_filename = os.path.join("logs", "sim_no-learning.csv")
+                self.log_filename_expanded = os.path.join("logs", "sim_no-learning-full.csv")
 
             self.log_fields = ['trial', 'testing', 'parameters', 'initial_deadline', 'final_deadline', 'net_reward', 'actions', 'success']
+            self.log_fields_expanded = ['trial',
+                                        'testing',
+                                        'parameters_epsilon',
+                                        'parameters_alpha',
+                                        'initial_deadline',
+                                        'final_deadline',
+                                        'net_reward',
+                                        'action-legal',
+                                        'action-minor_violation',
+                                        'action-major_violation',
+                                        'action-minor_accident',
+                                        'action-major_accident',
+                                        'success']
+
             self.log_file = open(self.log_filename, 'wb')
             self.log_writer = csv.DictWriter(self.log_file, fieldnames=self.log_fields)
             self.log_writer.writeheader()
+
+            # my log writer
+            self.my_log_file = open(self.log_filename_expanded, 'wb')
+            self.my_log_writer = csv.DictWriter(self.my_log_file, fieldnames=self.log_fields_expanded)
+            self.my_log_writer.writeheader()
 
     def run(self, tolerance=0.05, n_test=0):
         """ Run a simulation of the environment.
@@ -211,9 +235,25 @@ class Simulator(object):
                     'actions': self.env.trial_data['actions'],
                     'success': self.env.trial_data['success']
                 })
+                ##############################################################################################
+                self.my_log_writer.writerow({
+                    'trial': trial,
+                    'testing': self.env.trial_data['testing'],
+                    'parameters_epsilon': self.env.trial_data['parameters']['e'],
+                    'parameters_alpha': self.env.trial_data['parameters']['a'],
+                    'initial_deadline': self.env.trial_data['initial_deadline'],
+                    'final_deadline': self.env.trial_data['final_deadline'],
+                    'net_reward': self.env.trial_data['net_reward'],
+                    'action-legal': self.env.trial_data['actions'][0],
+                    'action-minor_violation': self.env.trial_data['actions'][1],
+                    'action-major_violation': self.env.trial_data['actions'][2],
+                    'action-minor_accident': self.env.trial_data['actions'][3],
+                    'action-major_accident': self.env.trial_data['actions'][4],
+                    'success': self.env.trial_data['success']
+                })
 
             # Trial finished
-            if self.env.success == True:
+            if self.env.success:
                 print "\nTrial Completed!"
                 print "Agent reached the destination."
             else:
@@ -242,6 +282,7 @@ class Simulator(object):
                 self.table_file.close()
 
             self.log_file.close()
+            self.my_log_file.close()
 
         print "\nSimulation ended. . . "
 
@@ -266,7 +307,7 @@ class Simulator(object):
             if status['violation'] == 0: # Legal
                 if status['waypoint'] == status['action']: # Followed waypoint
                     print "Agent followed the waypoint {}. (rewarded {:.2f})".format(status['action'], status['reward'])
-                elif status['action'] == None:
+                elif status['action'] is None:
                     if status['light'] == 'red': # Stuck at red light
                         print "Agent properly idled at a red light. (rewarded {:.2f})".format(status['reward'])
                     else:
@@ -384,12 +425,12 @@ class Simulator(object):
 
             # Action
             if status['violation'] == 0: # Legal
-                if status['action'] == None:
+                if status['action'] is None:
                     self.screen.blit(self.font.render("No action taken. (rewarded {:.2f})".format(status['reward']), True, self.colors['dgreen'], self.bg_color), (350, 40))
                 else:
                     self.screen.blit(self.font.render("Agent drove {}. (rewarded {:.2f})".format(status['action'], status['reward']), True, self.colors['dgreen'], self.bg_color), (350, 40))
             else: # Illegal
-                if status['action'] == None:
+                if status['action'] is None:
                     self.screen.blit(self.font.render("No action taken. (rewarded {:.2f})".format(status['reward']), True, self.colors['maroon'], self.bg_color), (350, 40))
                 else:
                     self.screen.blit(self.font.render("{} attempted (rewarded {:.2f})".format(status['action'], status['reward']), True, self.colors['maroon'], self.bg_color), (350, 40))
@@ -398,7 +439,7 @@ class Simulator(object):
             if status['violation'] == 0: # Legal
                 if status['waypoint'] == status['action']: # Followed waypoint
                     self.screen.blit(self.font.render("Agent followed the waypoint!", True, self.colors['dgreen'], self.bg_color), (350, 70))
-                elif status['action'] == None:
+                elif status['action'] is None:
                     if status['light'] == 'red': # Stuck at a red light
                         self.screen.blit(self.font.render("Agent idled at a red light!", True, self.colors['dgreen'], self.bg_color), (350, 70))
                     else:
@@ -425,9 +466,9 @@ class Simulator(object):
             # Denote whether a trial was a success or failure
             if (state['destination'] != state['location'] and state['deadline'] > 0) or (self.env.enforce_deadline is not True and state['destination'] != state['location']):
                 self.font = self.pygame.font.Font(None, 40)
-                if self.env.success == True:
+                if self.env.success:
                     self.screen.blit(self.font.render("Previous Trial: Success", True, self.colors['dgreen'], self.bg_color), (10, 50))
-                if self.env.success == False:
+                if self.env.success is False:
                     self.screen.blit(self.font.render("Previous Trial: Failure", True, self.colors['maroon'], self.bg_color), (10, 50))
 
                 if self.env.primary_agent.learning:

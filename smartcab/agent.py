@@ -4,6 +4,7 @@ from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
 
+
 class LearningAgent(Agent):
     """ An agent that learns to drive in the Smartcab world.
         This is the object you will be modifying. """
@@ -24,7 +25,9 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
-
+        self.steps = 0  # Number of steps in trial
+        self.trial_count = 1 # Number of trials
+        self.reached_dest = 0 # Number of times agent reached its destination
 
     def reset(self, destination=None, testing=False):
         """ The reset function is called at the beginning of each trial.
@@ -41,7 +44,15 @@ class LearningAgent(Agent):
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
 
-        self.epsilon -= 0.05
+        # a = 0.01
+        # Decay functions
+        self.epsilon -= 0.05 # Linear decay
+        # self.epsilon = 1 / math.pow(self.trial_count, 2)
+        # self.epsilon = math.exp(1) ** (-a * self.trial_count)
+        # self.epsilon - math.cos(a * self.trial_count)
+        # self.epsilon = self.epsilon / math.sqrt(self.trial_count)
+        self.trial_count += 1
+
         if testing:
             self.epsilon = 0.0
             self.alpha = 0.0
@@ -188,7 +199,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay=0.01, display=True, log_metrics=True, optimized=True)
+    sim = Simulator(env, update_delay=0.01, display=False, log_metrics=True, optimized=True)
 
     ##############
     # Run the simulator

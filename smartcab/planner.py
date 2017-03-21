@@ -1,5 +1,6 @@
 import random
 
+
 class RoutePlanner(object):
     """ Complex route planner that is meant for a perpendicular grid network. """
 
@@ -23,7 +24,7 @@ class RoutePlanner(object):
         heading = self.env.agent_states[self.agent]['heading']
 
         delta_a = (self.destination[0] - location[0], self.destination[1] - location[1])
-        delta_b = (bounds[0] + delta_a[0] if delta_a[0] <= 0 else delta_a[0] - bounds[0], \
+        delta_b = (bounds[0] + delta_a[0] if delta_a[0] <= 0 else delta_a[0] - bounds[0],
                    bounds[1] + delta_a[1] if delta_a[1] <= 0 else delta_a[1] - bounds[1])
 
         # Calculate true difference in location based on world-wrap
@@ -34,8 +35,8 @@ class RoutePlanner(object):
         # First check if destination is at location
         if dx == 0 and dy == 0:
             return None
-        
-        # Next check if destination is cardinally East or West of location    
+
+        # Next check if destination is cardinally East or West of location
         elif dx != 0:
 
             if dx * heading[0] > 0:  # Heading the correct East or West direction
