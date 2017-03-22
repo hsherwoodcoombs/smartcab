@@ -1,5 +1,6 @@
 import random
 import math
+from visuals2 import record_trials
 from environment import Agent, Environment
 from planner import RoutePlanner
 from simulator import Simulator
@@ -35,7 +36,15 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
+        self.trial_count = 0
 
+
+    # def getDecay(self, decay):
+
+        # self.epsilon = 1 / math.pow(self.trial_count, 2)
+        # self.epsilon = math.exp(1) ** (-a * self.trial_count)
+        # self.epsilon - math.cos(a * self.trial_count)
+        # self.epsilon = self.epsilon / math.sqrt(self.trial_count)
 
     def reset(self, destination=None, testing=False):
         """ The reset function is called at the beginning of each trial.
@@ -43,6 +52,7 @@ class LearningAgent(Agent):
             once training trials have completed. """
 
         # Select the destination as the new location to route to
+        self.trial_count += 1
         self.planner.route_to(destination)
 
         ###########
@@ -52,7 +62,8 @@ class LearningAgent(Agent):
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
 
-        self.epsilon -= 0.05
+        # self.epsilon -= 0.05
+        self.epsilon =  1 / math.pow(self.trial_count, 2)
         if testing:
             self.epsilon = 0.0
             self.alpha = 0.0
@@ -127,14 +138,15 @@ class LearningAgent(Agent):
                 # choose action with 'epsilon probability'
                 action = random.choice(self.valid_actions)
             else:
-                bestQ = None
-                bestAction = None
-                for action in self.valid_actions:
-                    thisQ = self.Q[state][action]
-                    if thisQ > bestQ:
-                        bestQ = thisQ
-                        bestAction = action
-                action = bestAction
+                action = random.choice([i for i in self.Q[self.state].keys() if self.Q[self.state][i] == self.get_maxQ(self.state)])
+                # bestQ = None
+                # bestAction = None
+                # for action in self.valid_actions:
+                #     thisQ = self.Q[state][action]
+                #     if thisQ > bestQ:
+                #         bestQ = thisQ
+                #         bestAction = action
+                # action = bestAction
 
         else:
             # choose random action
@@ -215,7 +227,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay=0.01, display=False, log_metrics=True, optimized=True)
+    sim = Simulator(env, update_delay=0.001, display=False, log_metrics=True, optimized=True)
 
     ##############
     # Run the simulator
@@ -226,4 +238,14 @@ def run():
 
 
 if __name__ == '__main__':
-    run()
+    list_alpha = [0.01, 0.001, 0.1, 0.5]
+    list_epsilon = [0.05, 0.1, 0.73, 0.9, 1.0]
+    for a in list_alpha:
+        for e in list_epsilon:
+            env = Environment()
+            agent = env.create_agent(LearningAgent, epsilon = e, alpha = a)
+            env.set_primary_agent(agent)
+            run()
+            file = 'sim_improved-learning.csv'
+            record_trials("improved_stats_all.csv", file, a, e)
+# run()

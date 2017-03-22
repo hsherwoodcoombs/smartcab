@@ -6,8 +6,8 @@ warnings.filterwarnings("ignore", category = UserWarning, module = "matplotlib")
 ###########################################
 #
 # Display inline matplotlib plots with IPython
-from IPython import get_ipython
-get_ipython().run_line_magic('matplotlib', 'inline')
+# from IPython import get_ipython
+# get_ipython().run_line_magic('matplotlib', 'inline')
 ###########################################
 
 import matplotlib.pyplot as plt
@@ -106,7 +106,7 @@ def get_alpha(data):
 
 def get_epsilon(data):
 	""" Returns literal representation of epsilon """
-	return data['parameters'].apply(lambda x: ast.literal_eval(x)['e'])[0] + get_alpha(data)
+	return (data['parameters'].apply(lambda x: ast.literal_eval(x)['e'])[0] + get_alpha(data))
 
 
 def get_feature(data, col):
@@ -266,9 +266,9 @@ def print_stats(input):
 	print "Average reward: {}".format(get_avg_reward(data))
 
 
-def record_trials(csv_name, read):
+def record_trials(csv_name, read, alpha, epsilon):
 	data = pd.read_csv(os.path.join("logs", read))
-	columns = ['alpha', 'epsilon', 'num_trials', 'num_success', 'good_ratio', 'rate_reliability', 'avg_reward']
+	columns = ['alpha', 'epsilon', 'num_trials', 'num_success', 'good_ratio', 'rate_reliability', 'avg_reward', 'net_return_Saf-Rel']
 	filename = os.path.join("logs", csv_name)
 
 	if not os.path.isfile(filename):
@@ -281,12 +281,13 @@ def record_trials(csv_name, read):
 		log_writer = csv.DictWriter(log_file, fieldnames = columns)
 
 	log_writer.writerow({
-		'alpha': get_alpha(data),
-		'epsilon': get_epsilon(data),
+		'alpha': alpha,
+		'epsilon': epsilon,
 		'num_trials': num_trials(data),
 		'num_success': data['success'].sum(),
 		'good_ratio': get_goodRatio(data),
 		'rate_reliability': get_rate_of_reliability(data),
-		'avg_reward': get_avg_reward(data)
+		'avg_reward': get_avg_reward(data),
+		'net_return_Saf-Rel': (get_goodRatio(data) + get_rate_of_reliability(data)) / 2
 	})
 	log_file.close()
