@@ -15,22 +15,13 @@ import numpy as np
 import pandas as pd
 import os
 import ast
-import csv
-
-
-def get_goodRatio(data):
-	"""
-	Returns the safety rating of the smartcab during testing in numerical format.
-	Safety is defined by safe and unsafe actions taken by the agent.
-	"""
-	g_acc = data['actions'].apply(lambda x: ast.literal_eval(x)[0])
-	return g_acc.sum() * 1.0 / (data['initial_deadline'] - data['final_deadline']).sum()
 
 
 def calculate_safety(data):
 	""" Calculates the safety rating of the smartcab during testing. """
 
-	good_ratio = get_goodRatio(data)
+	good_ratio = data['good_actions'].sum() * 1.0 / \
+	(data['initial_deadline'] - data['final_deadline']).sum()
 
 	if good_ratio == 1: # Perfect driving
 		return ("A+", "green")
@@ -43,33 +34,16 @@ def calculate_safety(data):
 			return ("C", "#EEC700")
 		else: # Minor violation
 			minor = data['actions'].apply(lambda x: ast.literal_eval(x)[1]).sum()
-			if minor >= len(data) / 2: # Minor violation in at least half of the trials
+			if minor >= len(data)/2: # Minor violation in at least half of the trials
 				return ("B", "green")
 			else:
 				return ("A", "green")
 
 
-def get_rate_of_reliability(data):
-	"""
-	Returns the reliability rating of the smartcab during testing in numerical format.
-	ROR is defined by the number of trips an agent reaches its destination.
-	"""
-	return data['success'].sum() * 1.0 / len(data)
-
-
-def get_avg_reward(data):
-	""" Returns the average reward the smartcab recieves over all trials """
-	return data['net_reward'].sum() * 1.0 / len(data)
-
-
-def num_trials(data):
-	return len(data)
-
-
 def calculate_reliability(data):
-	""" Converts the reliability rating of the smartcab to alphanumerical format during testing. """
+	""" Calculates the reliability rating of the smartcab during testing. """
 
-	success_ratio = get_rate_of_reliability(data)
+	success_ratio = data['success'].sum() * 1.0 / len(data)
 
 	if success_ratio == 1: # Always meets deadline
 		return ("A+", "green")
@@ -86,34 +60,6 @@ def calculate_reliability(data):
 			return ("F", "red")
 
 
-def get_rolling_reward(data):
-	""" Returns the rolling average reward over trial period
-		DATA: 		input data
-		WINDOW:		number of trials to incorporate in average
-	"""
-	return (data['net_reward'] / (data['initial_deadline'] - data['final_deadline'])).rolling(window=10, center=False).mean()
-
-
-def get_rolling_reliability(data):
-	""" Returns the average success over trial period """
-	return (data['success'] * 100).rolling(window=10, center=False).mean()
-
-
-def get_alpha(data):
-	""" Returns literal representation of alpha """
-	return data['parameters'].apply(lambda x: ast.literal_eval(x)['a'])[0]
-
-
-def get_epsilon(data):
-	""" Returns literal representation of epsilon """
-	return data['parameters'].apply(lambda x: ast.literal_eval(x)['e'])[0] + get_alpha(data)
-
-
-def get_feature(data, col):
-	""" Returns rolling average of this feature """
-	return (data['actions'].apply(lambda x: ast.literal_eval(x)[col]) * 1.0 / (data['initial_deadline'] - data['final_deadline'])).rolling(window=10, center=False).mean()
-
-
 def plot_trials(csv):
 	""" Plots the data from logged metrics during a simulation."""
 
@@ -125,15 +71,19 @@ def plot_trials(csv):
 		return
 
 	# Create additional features
-	data['average_reward'] = get_rolling_reward(data)
-	data['reliability_rate'] = get_rolling_reliability(data)  # compute avg. net reward with window=10
+	data['average_reward'] = (data['net_reward'] / (data['initial_deadline'] - data['final_deadline'])).rolling(window=10, center=False).mean()
+	data['reliability_rate'] = (data['success']*100).rolling(window=10, center=False).mean()  # compute avg. net reward with window=10
 	data['good_actions'] = data['actions'].apply(lambda x: ast.literal_eval(x)[0])
-	data['good'] = (data['good_actions'] * 1.0 / (data['initial_deadline'] - data['final_deadline'])).rolling(window=10, center=False).mean()
-	data['good_acc'] = get_feature(data, 0)
-	data['minor'] = get_feature(data, 1)
-	data['major'] = get_feature(data, 2)
-	data['minor_acc'] = get_feature(data, 3)
-	data['major_acc'] = get_feature(data, 4)
+	data['good'] = (data['good_actions'] * 1.0 / \
+		(data['initial_deadline'] - data['final_deadline'])).rolling(window=10, center=False).mean()
+	data['minor'] = (data['actions'].apply(lambda x: ast.literal_eval(x)[1]) * 1.0 / \
+		(data['initial_deadline'] - data['final_deadline'])).rolling(window=10, center=False).mean()
+	data['major'] = (data['actions'].apply(lambda x: ast.literal_eval(x)[2]) * 1.0 / \
+		(data['initial_deadline'] - data['final_deadline'])).rolling(window=10, center=False).mean()
+	data['minor_acc'] = (data['actions'].apply(lambda x: ast.literal_eval(x)[3]) * 1.0 / \
+		(data['initial_deadline'] - data['final_deadline'])).rolling(window=10, center=False).mean()
+	data['major_acc'] = (data['actions'].apply(lambda x: ast.literal_eval(x)[4]) * 1.0 / \
+		(data['initial_deadline'] - data['final_deadline'])).rolling(window=10, center=False).mean()
 	data['epsilon'] = data['parameters'].apply(lambda x: ast.literal_eval(x)['e'])
 	data['alpha'] = data['parameters'].apply(lambda x: ast.literal_eval(x)['a'])
 
@@ -142,14 +92,14 @@ def plot_trials(csv):
 	training_data = data[data['testing'] == False]
 	testing_data = data[data['testing'] == True]
 
-	plt.figure(figsize=(12, 8))
+	plt.figure(figsize=(12,8))
 
 
 	###############
 	### Average step reward plot
 	###############
 
-	ax = plt.subplot2grid((6, 6), (0, 3), colspan=3, rowspan=2)
+	ax = plt.subplot2grid((6,6), (0,3), colspan=3, rowspan=2)
 	ax.set_title("10-Trial Rolling Average Reward per Action")
 	ax.set_ylabel("Reward per Action")
 	ax.set_xlabel("Trial Number")
@@ -166,7 +116,7 @@ def plot_trials(csv):
 	### Parameters Plot
 	###############
 
-	ax = plt.subplot2grid((6, 6), (2, 3), colspan=3, rowspan=2)
+	ax = plt.subplot2grid((6,6), (2,3), colspan=3, rowspan=2)
 
 	# Check whether the agent was expected to learn
 	if csv != 'sim_no-learning.csv':
@@ -178,7 +128,7 @@ def plot_trials(csv):
 		ax.plot(training_data['trial'], training_data['epsilon'], color='blue', label='Exploration factor')
 		ax.plot(training_data['trial'], training_data['alpha'], color='green', label='Learning factor')
 
-		ax.legend(bbox_to_anchor=(0.5, 1.19), fancybox=True, ncol=2, loc='upper center', fontsize=10)
+		ax.legend(bbox_to_anchor=(0.5,1.19), fancybox=True, ncol=2, loc='upper center', fontsize=10)
 
 	else:
 		ax.axis('off')
@@ -200,7 +150,7 @@ def plot_trials(csv):
 	ax.set_ylim((0, maximum + 0.01))
 	ax.set_xlim((10, len(training_data)))
 
-	ax.set_yticks(np.linspace(0, maximum + 0.01, 10))
+	ax.set_yticks(np.linspace(0, maximum+0.01, 10))
 
 	ax.plot(actions['trial'], (1 - actions['good']), color='black', label='Total Bad Actions', linestyle='dotted', linewidth=3)
 	ax.plot(actions['trial'], actions['minor'], color='orange', label='Minor Violation', linestyle='dashed')
@@ -215,7 +165,7 @@ def plot_trials(csv):
 	### Rolling Success-Rate plot
 	###############
 
-	ax = plt.subplot2grid((6, 6), (4, 0), colspan=4, rowspan=2)
+	ax = plt.subplot2grid((6,6), (4,0), colspan=4, rowspan=2)
 	ax.set_title("10-Trial Rolling Rate of Reliability")
 	ax.set_ylabel("Rate of Reliability")
 	ax.set_xlabel("Trial Number")
@@ -230,14 +180,13 @@ def plot_trials(csv):
 
 	# Rolling success rate
 	ax.plot(trial, rate, label="Reliability Rate", color='blue')
-	ax.legend(loc='upper right', fancybox=True, fontsize=10)
 
 
 	###############
 	### Test results
 	###############
 
-	ax = plt.subplot2grid((6, 6), (4, 4), colspan=2, rowspan=2)
+	ax = plt.subplot2grid((6,6), (4,4), colspan=2, rowspan=2)
 	ax.axis('off')
 
 	if len(testing_data) > 0:
@@ -256,37 +205,3 @@ def plot_trials(csv):
 
 	plt.tight_layout()
 	plt.show()
-
-
-def print_stats(input):
-	data = pd.read_csv(os.path.join("logs", input))
-	print "Total successful runs: {}/{}".format(data['success'].sum(), len(data))
-	print "Rate of reliability: {}".format(get_rate_of_reliability(data))
-	print "Average action: {}".format(get_goodRatio(data))
-	print "Average reward: {}".format(get_avg_reward(data))
-
-
-def record_trials(csv_name, read):
-	data = pd.read_csv(os.path.join("logs", read))
-	columns = ['alpha', 'epsilon', 'num_trials', 'num_success', 'good_ratio', 'rate_reliability', 'avg_reward']
-	filename = os.path.join("logs", csv_name)
-
-	if not os.path.isfile(filename):
-		log_file = open(filename, 'a')
-		log_writer = csv.DictWriter(log_file, fieldnames = columns)
-		log_writer.writeheader()
-
-	else:
-		log_file = open(filename, 'a')
-		log_writer = csv.DictWriter(log_file, fieldnames = columns)
-
-	log_writer.writerow({
-		'alpha': get_alpha(data),
-		'epsilon': get_epsilon(data),
-		'num_trials': num_trials(data),
-		'num_success': data['success'].sum(),
-		'good_ratio': get_goodRatio(data),
-		'rate_reliability': get_rate_of_reliability(data),
-		'avg_reward': get_avg_reward(data)
-	})
-	log_file.close()

@@ -45,6 +45,7 @@ class LearningAgent(Agent):
         # self.epsilon = math.exp(1) ** (-a * self.trial_count)
         # self.epsilon - math.cos(a * self.trial_count)
         # self.epsilon = self.epsilon / math.sqrt(self.trial_count)
+        # self.epsilon = 1 / math.pow(self.trial_count, 2)
 
     def reset(self, destination=None, testing=False):
         """ The reset function is called at the beginning of each trial.
@@ -63,7 +64,8 @@ class LearningAgent(Agent):
         # If 'testing' is True, set epsilon and alpha to 0
 
         # self.epsilon -= 0.05
-        self.epsilon =  1 / math.pow(self.trial_count, 2)
+        if self.epsilon > 0:
+            self.epsilon = math.pow(self.alpha, self.trial_count)
         if testing:
             self.epsilon = 0.0
             self.alpha = 0.0
@@ -78,7 +80,7 @@ class LearningAgent(Agent):
         # Collect data about the environment
         waypoint = self.planner.next_waypoint() # The next waypoint
         inputs = self.env.sense(self)           # Visual input - intersection light and traffic
-        deadline = self.env.get_deadline(self)  # Remaining deadline
+        # deadline = self.env.get_deadline(self)  # Remaining deadline
 
         ###########
         ## TO DO ##
@@ -209,10 +211,10 @@ def run():
     ##############
     # Create the driving agent
     # Flags:
-    #   learning   - set to True to force the driving agent to use Q-learning
+    #    * learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning=True)
+    agent = env.create_agent(LearningAgent, learning=True, alpha=0.99, epsilon=0.05)
 
     ##############
     # Follow the driving agent
@@ -238,14 +240,14 @@ def run():
 
 
 if __name__ == '__main__':
-    list_alpha = [0.01, 0.001, 0.1, 0.5]
-    list_epsilon = [0.05, 0.1, 0.73, 0.9, 1.0]
-    for a in list_alpha:
-        for e in list_epsilon:
-            env = Environment()
-            agent = env.create_agent(LearningAgent, epsilon = e, alpha = a)
-            env.set_primary_agent(agent)
-            run()
-            file = 'sim_improved-learning.csv'
-            record_trials("improved_stats_all.csv", file, a, e)
-# run()
+    # list_alpha = [0.001, 0.01, 0.1, 0.3, 0.5, 0.95]
+    # # list_epsilon = [0.03, 0.05, 0.07, 0.09, 0.2, 0.73, 1.0]
+    # for a in list_alpha:
+    #     # for e in list_epsilon:
+    #     env = Environment()
+    #     agent = env.create_agent(LearningAgent, alpha = a)
+    #     env.set_primary_agent(agent)
+    #     run()
+    #     file = 'sim_improved-learning.csv'
+    #     record_trials("improved_stats_all.csv", file, a, 1.0)
+    run()

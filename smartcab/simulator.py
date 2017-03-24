@@ -10,7 +10,6 @@ import time
 import random
 import importlib
 import csv
-from visuals2 import record_trials
 
 class Simulator(object):
     """Simulates agents in a dynamic smartcab environment.
@@ -249,11 +248,6 @@ class Simulator(object):
         # Report final metrics
         if self.display:
             self.pygame.display.quit()  # shut down pygame
-
-        # report metrics from trial
-        # if self.optimized:
-        #     file = 'sim_improved-learning.csv'
-        # record_trials("improved_stats_all.csv", file)
 
     def render_text(self, trial, testing=False):
         """ This is the non-GUI render display of the simulation.
