@@ -65,7 +65,7 @@ class LearningAgent(Agent):
 
         # self.epsilon -= 0.05
         if self.epsilon > 0:
-            self.epsilon = math.pow(self.alpha, self.trial_count)
+            self.epsilon = math.exp(1) ** (-self.alpha * self.trial_count)
         if testing:
             self.epsilon = 0.0
             self.alpha = 0.0
@@ -214,7 +214,7 @@ def run():
     #    * learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning=True, alpha=0.99, epsilon=0.05)
+    agent = env.create_agent(LearningAgent, learning=True, alpha=0.05, epsilon=0.56)
 
     ##############
     # Follow the driving agent

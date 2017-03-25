@@ -261,13 +261,14 @@ def plot_trials(csv):
 def print_stats(input):
 	data = pd.read_csv(os.path.join("logs", input))
 	print "Total successful runs: {}/{}".format(data['success'].sum(), len(data))
-	print "Rate of reliability: {}".format(get_rate_of_reliability(data))
+	print "Rate of reliability: {}".format(get_rate_of_reliability(data[data['testing'] == True]))
 	print "Average action: {}".format(get_goodRatio(data))
 	print "Average reward: {}".format(get_avg_reward(data))
 
 
 def record_trials(csv_name, read, alpha, epsilon):
 	data = pd.read_csv(os.path.join("logs", read))
+	data = data[data['testing'] == True]
 	columns = ['alpha', 'epsilon', 'num_trials', 'num_success', 'good_ratio', 'rate_reliability', 'avg_reward', 'net_return_Saf-Rel']
 	filename = os.path.join("logs", csv_name)
 

@@ -205,3 +205,11 @@ def plot_trials(csv):
 
 	plt.tight_layout()
 	plt.show()
+
+
+def print_stats(input):
+	data = pd.read_csv(os.path.join("logs", input))
+	print "Total successful runs: {}/{}".format(data['success'].sum(), len(data))
+	print "Rate of reliability: {}".format(get_rate_of_reliability(data))
+	print "Average action: {}".format(get_goodRatio(data))
+	print "Average reward: {}".format(get_avg_reward(data))
