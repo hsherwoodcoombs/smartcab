@@ -41,7 +41,7 @@ class LearningAgent(Agent):
 
     # def getDecay(self, decay):
 
-        # self.epsilon = 1 / math.pow(self.trial_count, 2)
+        # self.epsilon = math.pow(self.alpha, self.trial_count)
         # self.epsilon = math.exp(1) ** (-a * self.trial_count)
         # self.epsilon - math.cos(a * self.trial_count)
         # self.epsilon = self.epsilon / math.sqrt(self.trial_count)
@@ -65,7 +65,7 @@ class LearningAgent(Agent):
 
         # self.epsilon -= 0.05
         if self.epsilon > 0:
-            self.epsilon = math.exp(1) ** (-self.alpha * self.trial_count)
+            self.epsilon = math.pow(self.alpha, self.trial_count)
         if testing:
             self.epsilon = 0.0
             self.alpha = 0.0
@@ -214,7 +214,7 @@ def run():
     #    * learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning=True, alpha=0.05, epsilon=0.56)
+    agent = env.create_agent(LearningAgent, learning=True, epsilon=0.056, alpha=0.05)
 
     ##############
     # Follow the driving agent
@@ -240,6 +240,7 @@ def run():
 
 
 if __name__ == '__main__':
+    run()
     # list_alpha = [0.001, 0.01, 0.1, 0.3, 0.5, 0.95]
     # # list_epsilon = [0.03, 0.05, 0.07, 0.09, 0.2, 0.73, 1.0]
     # for a in list_alpha:
@@ -250,4 +251,3 @@ if __name__ == '__main__':
     #     run()
     #     file = 'sim_improved-learning.csv'
     #     record_trials("improved_stats_all.csv", file, a, 1.0)
-    run()

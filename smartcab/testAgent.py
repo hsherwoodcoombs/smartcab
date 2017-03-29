@@ -1,9 +1,9 @@
 import random
 import math
 from visuals2 import record_trials
-from myEnvironment import Agent, Environment
+from environment import Agent, Environment
 from planner import RoutePlanner
-from mySimulator import Simulator
+from simulator import Simulator
 
 # Step for Implement a Q-Learning driving agent:
 # Implement a decaying, epsilon-greedy Q-learning algorithm with NO discount factor
@@ -65,7 +65,7 @@ class LearningAgent(Agent):
 
         # self.epsilon -= 0.05
         if self.epsilon > 0:
-            self.epsilon = 1 / (math.pow(self.trial_count, 2))
+            self.epsilon = math.pow(self.alpha, self.trial_count)
         if testing:
             self.epsilon = 0.0
             self.alpha = 0.0
@@ -214,7 +214,7 @@ def run():
     #    * learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning=True)
+    agent = env.create_agent(LearningAgent, learning=True, alpha=0.99, epsilon=0.05)
 
     ##############
     # Follow the driving agent
@@ -240,14 +240,14 @@ def run():
 
 
 if __name__ == '__main__':
-    # list_alpha = [0.01, 0.05, 0.2, 0.3, 0.73, 0.8, 0.96, 0.97, 0.989, 0.99, 0.991]
-    # list_epsilon = [0.039, 0.04, 0.043, 0.056, 0.049, 0.05, 0.1, 0.3]
+    # list_alpha = [0.001, 0.01, 0.1, 0.3, 0.5, 0.95]
+    # # list_epsilon = [0.03, 0.05, 0.07, 0.09, 0.2, 0.73, 1.0]
     # for a in list_alpha:
-    #     for e in list_epsilon:
-    #         env = Environment()
-    #         agent = env.create_agent(LearningAgent, alpha = a, epsilon = e)
-    #         env.set_primary_agent(agent)
-    #         run()
-    #         file = 'sim_improved-learning.csv'
-    #         record_trials("improved_stats_all.csv", file, a, e)
+    #     # for e in list_epsilon:
+    #     env = Environment()
+    #     agent = env.create_agent(LearningAgent, alpha = a)
+    #     env.set_primary_agent(agent)
+    #     run()
+    #     file = 'sim_improved-learning.csv'
+    #     record_trials("improved_stats_all.csv", file, a, 1.0)
     run()
