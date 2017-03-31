@@ -65,7 +65,7 @@ class LearningAgent(Agent):
 
         # self.epsilon -= 0.05
         if self.epsilon > 0:
-            self.epsilon = 1 / (math.pow(self.trial_count, 2))
+            self.epsilon = self.epsilon / math.sqrt(self.trial_count)
         if testing:
             self.epsilon = 0.0
             self.alpha = 0.0
@@ -240,14 +240,14 @@ def run():
 
 
 if __name__ == '__main__':
-    # list_alpha = [0.01, 0.05, 0.2, 0.3, 0.73, 0.8, 0.96, 0.97, 0.989, 0.99, 0.991]
-    # list_epsilon = [0.039, 0.04, 0.043, 0.056, 0.049, 0.05, 0.1, 0.3]
-    # for a in list_alpha:
-    #     for e in list_epsilon:
-    #         env = Environment()
-    #         agent = env.create_agent(LearningAgent, alpha = a, epsilon = e)
-    #         env.set_primary_agent(agent)
-    #         run()
-    #         file = 'sim_improved-learning.csv'
-    #         record_trials("improved_stats_all.csv", file, a, e)
+    list_alpha = [0.01, 0.05, 0.2, 0.3, 0.73, 0.8, 0.96, 0.97, 0.989, 0.99, 0.991]
+    list_epsilon = [0.039, 0.04, 0.043, 0.056, 0.049, 0.05, 0.1, 0.3]
+    for a in list_alpha:
+        for e in list_epsilon:
+            env = Environment()
+            agent = env.create_agent(LearningAgent, alpha = a, epsilon = e)
+            env.set_primary_agent(agent)
+            run()
+            file = 'sim_improved-learning.csv'
+            record_trials("improved_stats_all.csv", file, a, e)
     run()

@@ -5,15 +5,15 @@ def sumOf(dataTable, col):
 
 def sumOfActions(dataTable):
     legal = sumOf(dataTable, 'action-legal')
-    print "Legal actions: \t\t{}".format(legal)
+    print "Legal actions: \t\t\t{}".format(legal)
     min_v = sumOf(dataTable, 'action-minor_violation')
-    print "Minor violations: \t{}".format(min_v)
+    print "Minor violations: \t\t{}".format(min_v)
     maj_v = sumOf(dataTable, 'action-major_violation')
-    print "Major violations: \t{}".format(maj_v)
+    print "Major violations: \t\t{}".format(maj_v)
     min_a = sumOf(dataTable, 'action-minor_accident')
-    print "Minor accident: \t{}".format(min_a)
+    print "Minor accident: \t\t{}".format(min_a)
     maj_a = sumOf(dataTable, 'action-major_accident')
-    print "Legal actions: \t\t{}".format(maj_a)
+    print "Legal actions: \t\t\t{}".format(maj_a)
     sumAct = legal + min_v + maj_v + min_a + maj_a
     return {'action': ['legal', 'minor_violation', 'major_violation', 'minor_accident', 'major_accident'],'count':[legal, min_v, maj_v, min_a, maj_a]}
 

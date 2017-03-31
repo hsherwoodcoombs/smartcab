@@ -42,7 +42,7 @@ class LearningAgent(Agent):
     # def getDecay(self, decay):
 
         # self.epsilon = 1 / math.pow(self.trial_count, 2)
-        # self.epsilon = math.exp(1) ** (-a * self.trial_count)
+        # self.epsilon = math.exp(1) ** (-self.alpha * self.trial_count)
         # self.epsilon - math.cos(a * self.trial_count)
         # self.epsilon = self.epsilon / math.sqrt(self.trial_count)
         # self.epsilon = 1 / math.pow(self.trial_count, 2)
@@ -214,7 +214,7 @@ def run():
     #    * learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning=True, alpha=0.99, epsilon=0.05)
+    agent = env.create_agent(LearningAgent, learning=True, alpha=0.96, epsilon=0.3)
 
     ##############
     # Follow the driving agent
