@@ -65,7 +65,7 @@ class LearningAgent(Agent):
 
         # self.epsilon -= 0.05
         if self.epsilon > 0:
-            self.epsilon = self.epsilon / math.sqrt(self.trial_count)
+            self.epsilon = math.pow(self.alpha, self.trial_count)
         if testing:
             self.epsilon = 0.0
             self.alpha = 0.0
@@ -236,12 +236,14 @@ def run():
     # Flags:
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05
     #   n_test     - discrete number of testing trials to perform, default is 0
-    sim.run(n_test=10)
+    sim.run(n_test=500)
 
 
 if __name__ == '__main__':
-    list_alpha = [0.01, 0.05, 0.2, 0.3, 0.73, 0.8, 0.96, 0.97, 0.989, 0.99, 0.991]
-    list_epsilon = [0.039, 0.04, 0.043, 0.056, 0.049, 0.05, 0.1, 0.3]
+    # list_epsilon = [0.73, 0.8, 0.96, 0.97, 0.989, 0.99, 0.991]
+    # list_alpha = [0.039, 0.04, 0.043, 0.056, 0.049, 0.05, 0.1, 0.3, 0.2]
+    list_epsilon = [0.8, 0.97, 0.989, 0.99, 0.991]
+    list_alpha = [0.04, 0.056, 0.05]
     for a in list_alpha:
         for e in list_epsilon:
             env = Environment()
