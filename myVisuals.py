@@ -49,6 +49,24 @@ def calculate_safety(data):
 				return ("A", "green")
 
 
+def calculate_safety_from(good_ratio):
+	if good_ratio == 1: # Perfect driving
+		return ("A+", "green")
+	else: # Imperfect driving
+		if data['actions'].apply(lambda x: ast.literal_eval(x)[4]).sum() > 0: # Major accident
+			return ("F", "red")
+		elif data['actions'].apply(lambda x: ast.literal_eval(x)[3]).sum() > 0: # Minor accident
+			return ("D", "#EEC700")
+		elif data['actions'].apply(lambda x: ast.literal_eval(x)[2]).sum() > 0: # Major violation
+			return ("C", "#EEC700")
+		else: # Minor violation
+			minor = data['actions'].apply(lambda x: ast.literal_eval(x)[1]).sum()
+			if minor >= len(data) / 2: # Minor violation in at least half of the trials
+				return ("B", "green")
+			else:
+				return ("A", "green")
+
+
 def get_rate_of_reliability(data):
 	"""
 	Returns the reliability rating of the smartcab during testing in numerical format.
@@ -64,6 +82,22 @@ def get_avg_reward(data):
 
 def num_trials(data):
 	return len(data)
+
+
+def calculate_reliability_from(success_ratio):
+	if success_ratio == 1: # Always meets deadline
+		return ("A+", "green")
+	else:
+		if success_ratio >= 0.90:
+			return ("A", "green")
+		elif success_ratio >= 0.80:
+			return ("B", "green")
+		elif success_ratio >= 0.70:
+			return ("C", "#EEC700")
+		elif success_ratio >= 0.60:
+			return ("D", "#EEC700")
+		else:
+			return ("F", "red")
 
 
 def calculate_reliability(data):
@@ -242,7 +276,7 @@ def plot_trials(csv):
 
 	if len(testing_data) > 0:
 		safety_rating, safety_color = calculate_safety(testing_data)
-		reliability_rating, reliability_color = calculate_reliability(testing_data)
+		reliability_rating, reliability_color = calculate_reliability_from(get_rate_of_reliability(testing_data))
 
 		# Write success rate
 		ax.text(0.40, .9, "{} testing trials simulated.".format(len(testing_data)), fontsize=14, ha='center')
