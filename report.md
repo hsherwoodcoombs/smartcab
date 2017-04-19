@@ -27,30 +27,6 @@ To assist evaluating these important metrics, you will need to load visualizatio
 -----
 # I.  Define Environment
 
-
-```python
-# Import for analyzing and reading data
-import numpy as np
-import pandas as pd
-import sklearn
-import scipy as sp
-import scipy.stats as stats
-
-# Import the visualization code
-import myVisuals as vs
-import util as utils
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import seaborn as sns
-import plotly.plotly as py
-import plotly.figure_factory as ff
-import plotly.tools as tls
-
-# Pretty display for notebooks
-%matplotlib inline
-from IPython.display import display
-```
-
 ### The World
 Before starting to work on implementing your driving agent, it's necessary to first understand the world (environment) which the *Smartcab* and driving agent work in. One of the major components to building a self-learning agent is understanding the characteristics about the agent, which includes how the agent operates. To begin, simply run the `agent.py` agent code exactly how it is -- no need to make any additions whatsoever. Let the resulting simulation run for some time to see the various working components. Note that in the visual simulation (if enabled), the **white vehicle** is the *Smartcab*.
 
@@ -78,12 +54,12 @@ The smartcab receives a **negative** reward for each
 
 
 #### Reward Scheme:<br>
-- $R(s) = 2$ for a valid move headed toward the waypoint
-- $R(s) = 1$ for a valid move but not the waypoint 
-- $R(s) = -5$ for a minor violation
-- $R(s) = -10$ for a major violation
-- $R(s) = -20$ for a minor accident
-- $R(s) = -40$ for a major accident
+- 'R(s) = 2' for a valid move headed toward the waypoint
+- 'R(s) = 1' for a valid move but not the waypoint 
+- 'R(s) = -5' for a minor violation
+- 'R(s) = -10' for a major violation
+- 'R(s) = -20' for a minor accident
+- 'R(s) = -40' for a major accident
 
 *Based on the rewards and penalties the smartcab receives, the self-driving agent implementation should learn an optimal policy for driving on the city roads while obeying traffic rules, avoiding accidents, and reaching passengers’ destinations in the allotted time*
 
