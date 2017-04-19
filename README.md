@@ -23,4 +23,4 @@ In a terminal or command window, navigate to the top-level project directory `sm
 This will run the `agent.py` file and execute your agent code.
 # smartcab
 
-[1]:	stills/grid.jpg "Smartcab!"
+[1]:	stills/improved_agent.mov
