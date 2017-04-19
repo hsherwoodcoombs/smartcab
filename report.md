@@ -1,12 +1,6 @@
-
 # Machine Learning Engineer Nanodegree
 ## Reinforcement Learning
 ## Project: Train a Smartcab to Drive
-
-Welcome to the fourth project of the Machine Learning Engineer Nanodegree! In this notebook, template code has already been provided for you to aid in your analysis of the *Smartcab* and your implemented learning algorithm. You will not need to modify the included code beyond what is requested. There will be questions that you must answer which relate to the project and the visualizations provided in the notebook. Each section where you will answer a question is preceded by a **'Question X'** header. Carefully read each question and provide thorough answers in the following text boxes that begin with **'Answer:'**. Your project submission will be evaluated based on your answers to each of the questions and the implementation you provide in `agent.py`.  
-
->**Note:** Code and Markdown cells can be executed using the **Shift + Enter** keyboard shortcut. In addition, Markdown cells can be edited by typically double-clicking the cell to enter edit mode.
-
 
 ### Optimization Metrics
 In this project, you will work towards constructing an optimized Q-Learning driving agent that will navigate a *Smartcab* through its environment towards a goal. Since the *Smartcab* is expected to drive passengers from one location to another, the driving agent will be evaluated on two very important metrics: **Safety** and **Reliability**. A driving agent that gets the *Smartcab* to its destination while running red lights or narrowly avoiding accidents would be considered **unsafe**. Similarly, a driving agent that frequently fails to reach the destination in time would be considered **unreliable**. Maximizing the driving agent's **safety** and **reliability** would ensure that *Smartcabs* have a permanent place in the transportation industry.
@@ -54,12 +48,12 @@ The smartcab receives a **negative** reward for each
 
 
 #### Reward Scheme:<br>
-- 'R(s) = 2' for a valid move headed toward the waypoint
-- 'R(s) = 1' for a valid move but not the waypoint 
-- 'R(s) = -5' for a minor violation
-- 'R(s) = -10' for a major violation
-- 'R(s) = -20' for a minor accident
-- 'R(s) = -40' for a major accident
+- `R(s) = 2` for a valid move headed toward the waypoint
+- `R(s) = 1` for a valid move but not the waypoint 
+- `R(s) = -5` for a minor violation
+- `R(s) = -10` for a major violation
+- `R(s) = -20` for a minor accident
+- `R(s) = -40` for a major accident
 
 *Based on the rewards and penalties the smartcab receives, the self-driving agent implementation should learn an optimal policy for driving on the city roads while obeying traffic rules, avoiding accidents, and reaching passengers’ destinations in the allotted time*
 
@@ -75,27 +69,28 @@ The white cab has the task of picking up a passenger at a random location and dr
 <br>
 - Classes
     - Environment
+    
     - Inputs
         - Oncoming (4) none, forward, left, right
         - Left (4) none, forward, left, right
         - Right (4) none, forward, left, right
         - Light
+    
     - Agent
         - Start
         - Location
         - Heading
+    
     - Destination
         - (x, y)
 
 
 
-```python
 %%HTML
 <video width="100%" height="640" controls poster="stills/q1_poster.png">
   <source src="stills/q1_vid.mov" type="video/mp4">
     Your browser does not support the video tag.
 </video>
-```
 
 
 <video width="100%" height="640" controls poster="stills/q1_poster.png">
