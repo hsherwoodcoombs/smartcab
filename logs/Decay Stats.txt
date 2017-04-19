@@ -1,0 +1,7 @@
+Decay Stats
+
+Model 1: self.epsilon = math.pow(self.alpha, self.trial_count)
+Model 2: self.epsilon = 1 / math.pow(self.trial_count, 2)
+Model 3: self.epsilon = math.pow(self.epsilon, (-self.alpha * self.trial_count))
+Model 4: self.epsilon = math.exp(1) ** (-a * self.trial_count)
+Model 5: self.epsilon =
