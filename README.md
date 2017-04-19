@@ -2,7 +2,7 @@
 # Reinforcement Learning
 ## Project: Train a Smartcab How to Drive
 
-[!alt tag][1]
+![][1]
 
 ### Install
 
@@ -23,4 +23,4 @@ In a terminal or command window, navigate to the top-level project directory `sm
 This will run the `agent.py` file and execute your agent code.
 # smartcab
 
-[1]:	stills/improved_agent.mov
+[1]:	stills/improved_agent.gif
