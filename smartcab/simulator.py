@@ -40,8 +40,8 @@ class Simulator(object):
         self.width, self.height = self.size
         self.road_width = 44
 
-        self.bg_color = self.colors['gray']
-        self.road_color = self.colors['white']
+        self.bg_color = self.colors['white']
+        self.road_color = self.colors['gray']
         self.line_color = self.colors['mustard']
         self.boundary = self.colors['black']
         self.stop_color = self.colors['crimson']
@@ -52,6 +52,8 @@ class Simulator(object):
         self.last_updated = 0.0
         self.update_delay = update_delay  # duration between each step (in seconds)
 
+        self.cap = "Sherwood- SmartCab Driving Agent"
+
         self.display = display
         if self.display:
             try:
@@ -59,6 +61,7 @@ class Simulator(object):
                 self.pygame.init()
                 self.screen = self.pygame.display.set_mode(self.size)
                 self._logo = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "logo.png")), (self.road_width, self.road_width))
+                self._pin = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "pin.png")), (self.road_width, self.road_width))
 
                 self._ew = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "east-west.png")), (self.road_width, self.road_width))
                 self._ns = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "north-south.png")), (self.road_width, self.road_width))
@@ -67,6 +70,7 @@ class Simulator(object):
                 self.agent_sprite_size = (32, 32)
                 self.primary_agent_sprite_size = (42, 42)
                 self.agent_circle_radius = 20  # radius of circle, when using simple representation
+                self.pygame.display.set_caption(self.cap)
                 for agent in self.env.agent_states:
                     if agent.color == 'white':
                         agent._sprite = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "car-{}.png".format(agent.color))), self.primary_agent_sprite_size)
@@ -357,7 +361,7 @@ class Simulator(object):
 
 
             if state['destination'] is not None:
-                self.screen.blit(self._logo,
+                self.screen.blit(self._pin,
                     self.pygame.rect.Rect(state['destination'][0] * self.env.block_size - self.road_width/2, \
                         state['destination'][1]*self.env.block_size - self.road_width/2, \
                         state['destination'][0]*self.env.block_size + self.road_width/2, \
